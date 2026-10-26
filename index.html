@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schweizer Broker & Vanguard FTSE All-World (Acc) Rechner 2026</title>
+  <meta name="description" content="Interaktiver Kosten- & Wachstumsrechner für Schweizer Broker, Neobanken (neon, Yuh), Staatsbanken (ZKB, PostFinance, Raiffeisen, UBS) und den Vanguard FTSE All-World UCITS ETF (Acc)." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --secondary: #f1f5f9;
+      --secondary-foreground: #1e293b;
+      --muted-foreground: #64748b;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+    }
+    html.dark {
+      --background: #0b0f19;
+      --foreground: #f1f5f9;
+      --card: #111827;
+      --border: #1e293b;
+      --secondary: #1e293b;
+      --secondary-foreground: #e2e8f0;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+      --primary-foreground: #ffffff;
+    }
+    input[type="range"] {
+      accent-color: var(--primary);
+    }
+    .bar-transition {
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 min-h-screen transition-colors duration-200">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            🇨🇭 Schweizer Broker-Vergleich 2026
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
+            🌍 Inkl. Vanguard FTSE All-World (Thesaurierend / Acc) Simulation
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)]">
+          Schweizer Depot-, Kosten- & ETF-Wachstumsrechner
+        </h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1 max-w-3xl">
+          Vergleiche alle Depot-, Transaktions-, FX- und Stempelkosten für dein gestaffeltes Investment (z. B. 50'000 CHF Start + 5'000 CHF/Mt.) und sieh live, wie sich der <strong>Vanguard FTSE All-World UCITS ETF (USD) Accumulating</strong> inkl. Zinseszins und Gebühren entwickelt.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="applyPreset(100000, 50000, 5000, 10, 'vwce_chf', 7.5)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-emerald-500/40 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition">
+          🌍 Vanguard All-World Acc (100k / 10 J.)
+        </button>
+        <button onclick="applyPreset(100000, 50000, 5000, 1, 'vwce_chf', 7.5)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90 transition">
+          ⚡ 1. Jahr Aufbau (100k / 50k Start)
+        </button>
+        <button onclick="applyPreset(250000, 100000, 10000, 15, 'vwce_chf', 7.5)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--secondary)] transition">
+          🏛️ 250k Depot (15 J.)
+        </button>
+        <button onclick="toggleTheme()" id="themeToggleBtn" class="px-3 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--secondary)] transition" title="Hell / Dunkel umschalten">
+          ☀️ / 🌙
+        </button>
+      </div>
+    </div>
+
+    <!-- Vanguard FTSE All-World (Acc) Fact Sheet Banner -->
+    <div id="vanguardBanner" class="bg-[var(--card)] border border-emerald-500/30 rounded-2xl p-5 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-500 text-white">ETF-PROFIL</span>
+            <h2 class="text-base md:text-lg font-bold text-[var(--foreground)]">
+              Vanguard FTSE All-World UCITS ETF (USD) Accumulating (Thesaurierend)
+            </h2>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            ISIN: <strong>IE00BK5BQT80</strong> · Ticker: <strong>VWCE</strong> (Xetra/EUR) / <strong>VWRA</strong> (LSE/USD) / <strong>VWCE</strong> (SIX CHF) · ~3'650 Aktien weltweit (Industrie- & Schwellenländer) · Dividenden werden automatisch reinvestiert.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
+          <div class="px-3 py-2 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs text-[var(--muted-foreground)]">ETF-Kosten (TER)</div>
+            <div class="text-sm font-bold text-[var(--foreground)]">0.22% p.a.</div>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs text-[var(--muted-foreground)]">Stempelsteuer (IE)</div>
+            <div class="text-sm font-bold text-amber-500">0.15% (Ausland-ISIN)</div>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs text-[var(--muted-foreground)]">Hist. Rendite (Ø)</div>
+            <div class="text-sm font-bold text-emerald-500">~7.5% – 8.5% p.a.</div>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs text-[var(--muted-foreground)]">CH Verrechnungssteuer</div>
+            <div class="text-sm font-bold text-[var(--foreground)]">Steuerbar (ICTax)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Controls + Summary Timeline -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Input Parameters -->
+      <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+        <h2 class="text-lg font-semibold flex items-center justify-between border-b border-[var(--border)] pb-3">
+          <span>1. Investition & ETF-Wachstum</span>
+          <span class="text-xs font-normal text-[var(--muted-foreground)]">Alle Beträge in CHF</span>
+        </h2>
+
+        <!-- Total Capital -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-sm">
+            <label class="font-medium text-[var(--foreground)]">Verfügbares Gesamtkapital</label>
+            <span id="totalCapitalLabel" class="font-bold text-[var(--primary)]">CHF 100'000</span>
+          </div>
+          <div class="flex gap-3 items-center">
+            <input id="totalCapitalRange" type="range" min="5000" max="500000" step="5000" value="100000" class="w-full h-2 rounded-lg cursor-pointer" oninput="syncInputs('totalCapital', this.value)" />
+            <input id="totalCapitalInput" type="number" min="1000" max="5000000" step="1000" value="100000" class="w-28 px-2.5 py-1.5 text-sm rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] font-semibold text-right" oninput="syncInputs('totalCapital', this.value)" />
+          </div>
+        </div>
+
+        <!-- Initial Lump Sum -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-sm">
+            <label class="font-medium text-[var(--foreground)]">Start-Investition (Monat 1)</label>
+            <span id="initialInvestLabel" class="font-bold text-[var(--primary)]">CHF 50'000</span>
+          </div>
+          <div class="flex gap-3 items-center">
+            <input id="initialInvestRange" type="range" min="0" max="500000" step="2500" value="50000" class="w-full h-2 rounded-lg cursor-pointer" oninput="syncInputs('initialInvest', this.value)" />
+            <input id="initialInvestInput" type="number" min="0" max="5000000" step="1000" value="50000" class="w-28 px-2.5 py-1.5 text-sm rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] font-semibold text-right" oninput="syncInputs('initialInvest', this.value)" />
+          </div>
+        </div>
+
+        <!-- Monthly Investment -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-sm">
+            <label class="font-medium text-[var(--foreground)]">Monatliche Folge-Investition</label>
+            <span id="monthlyInvestLabel" class="font-bold text-[var(--primary)]">CHF 5'000 / Mt.</span>
+          </div>
+          <div class="flex gap-3 items-center">
+            <input id="monthlyInvestRange" type="range" min="250" max="25000" step="250" value="5000" class="w-full h-2 rounded-lg cursor-pointer" oninput="syncInputs('monthlyInvest', this.value)" />
+            <input id="monthlyInvestInput" type="number" min="0" max="500000" step="250" value="5000" class="w-28 px-2.5 py-1.5 text-sm rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] font-semibold text-right" oninput="syncInputs('monthlyInvest', this.value)" />
+          </div>
+        </div>
+
+        <!-- Expected Annual Return Slider (Vanguard Growth) -->
+        <div class="space-y-1 pt-2 border-t border-[var(--border)]">
+          <div class="flex justify-between text-sm">
+            <label class="font-medium text-[var(--foreground)]">Erwartetes ETF-Wachstum p.a. (vor TER)</label>
+            <span id="returnRateLabel" class="font-bold text-emerald-500">7.5% p.a.</span>
+          </div>
+          <div class="flex gap-3 items-center">
+            <input id="returnRateRange" type="range" min="0" max="12" step="0.5" value="7.5" class="w-full h-2 rounded-lg cursor-pointer" oninput="syncInputs('returnRate', this.value)" />
+            <div class="flex gap-1 shrink-0">
+              <button onclick="syncInputs('returnRate', 5.0)" class="px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--secondary)]">5%</button>
+              <button onclick="syncInputs('returnRate', 7.5)" class="px-2 py-1 text-xs rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-500 font-semibold">Ø 7.5%</button>
+              <button onclick="syncInputs('returnRate', 9.5)" class="px-2 py-1 text-xs rounded border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--secondary)]">9.5%</button>
+            </div>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            Historische Rendite des FTSE All-World in CHF lag langfristig bei ca. 7.0% – 8.5% p.a. (inkl. thesaurierter Dividenden von ~1.9%).
+          </p>
+        </div>
+
+        <!-- Asset Type / Trading Venue & Holding Period -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[var(--border)]">
+          <div class="space-y-1">
+            <label class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">ETF / Handelsplatz-Wahl</label>
+            <select id="assetMix" onchange="recalculate()" class="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] font-medium">
+              <option value="vwce_chf" selected>🌍 Vanguard FTSE All-World Acc (an SIX in CHF)</option>
+              <option value="vwce_fx">🌍 Vanguard FTSE All-World Acc (Xetra EUR / LSE USD)</option>
+              <option value="chf_etf">🇨🇭 Schweizer ETF (CH-ISIN, z.B. SMI/SPI in CHF)</option>
+              <option value="global_etf">📊 Gemischt (50% CH-ISIN / 50% Ausland-ETF)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Anlagehorizont (Wachstum)</label>
+            <select id="holdingYears" onchange="recalculate()" class="w-full px-3 py-2 text-xs rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] font-medium">
+              <option value="1">1 Jahr (Aufbauphase)</option>
+              <option value="3">3 Jahre</option>
+              <option value="5">5 Jahre</option>
+              <option value="10" selected>10 Jahre (Wachstums-Vergleich)</option>
+              <option value="15">15 Jahre</option>
+              <option value="20">20 Jahre</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="space-y-2 pt-2 border-t border-[var(--border)] text-xs">
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-[var(--foreground)] font-medium">Eidg. Stempelsteuer einrechnen (Vanguard IE-ISIN = 0.15%)</span>
+            <input id="includeStampDuty" type="checkbox" checked onchange="recalculate()" class="w-4 h-4 rounded" />
+          </label>
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-[var(--foreground)] font-medium">Sparplan-Rabatt für monatliche 5'000 CHF Käufe nutzen</span>
+            <input id="useSavingsPlan" type="checkbox" checked onchange="recalculate()" class="w-4 h-4 rounded" />
+          </label>
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-[var(--foreground)] font-medium">ETF-Produktkosten (TER 0.22% p.a.) im Endvermögen abziehen</span>
+            <input id="includeTerInGrowth" type="checkbox" checked onchange="recalculate()" class="w-4 h-4 rounded" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Right Column: Vanguard Growth Projection & Fee Drag Impact -->
+      <div class="lg:col-span-7 flex flex-col justify-between bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-5">
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
+            <div>
+              <h2 class="text-lg font-semibold">2. Vermögenswachstum & Gebühren-Bremse (Vanguard All-World Acc)</h2>
+              <p class="text-xs text-[var(--muted-foreground)]">
+                Da Depotgebühren prozentual auf das <strong>wachsende Vermögen</strong> erhoben werden, steigen sie bei Staatsbanken mit dem ETF-Wachstum jedes Jahr an!
+              </p>
+            </div>
+            <span id="scenarioBadge" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+              1 Startkauf + 10 Monatskäufe
+            </span>
+          </div>
+
+          <!-- Growth KPI Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+            <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+              <div class="text-xs text-[var(--muted-foreground)]">Eingezahltes Kapital</div>
+              <div id="kpiTotalInvested" class="text-base font-bold mt-0.5">CHF 100'000</div>
+              <div id="kpiTranches" class="text-xs text-[var(--muted-foreground)] mt-0.5">50k + 10x 5k</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+              <div class="text-xs text-emerald-500 font-medium">Endvermögen (Top-Broker)</div>
+              <div id="kpiFinalWealthBest" class="text-base font-bold text-emerald-500 mt-0.5">CHF 195'130</div>
+              <div id="kpiNetProfitBest" class="text-xs text-[var(--muted-foreground)] mt-0.5">+CHF 95'130 Gewinn</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+              <div class="text-xs text-[var(--muted-foreground)]">Endvermögen (Staatsbank)</div>
+              <div id="kpiFinalWealthBank" class="text-base font-bold mt-0.5">CHF 189'140</div>
+              <div id="kpiNetProfitBank" class="text-xs text-[var(--muted-foreground)] mt-0.5">ZKB / Grossbank</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30">
+              <div class="text-xs text-rose-500 font-medium">Wachstums-Verlust (Bank)</div>
+              <div id="kpiWealthDiff" class="text-base font-bold text-rose-500 mt-0.5">-CHF 8'180</div>
+              <div id="kpiWealthDiffSub" class="text-xs text-[var(--muted-foreground)] mt-0.5">Gebühren + entg. Zinseszins</div>
+            </div>
+          </div>
+
+          <!-- Interactive Year-by-Year Wealth Growth Chart -->
+          <div class="mt-5">
+            <div class="flex flex-wrap justify-between items-center text-xs text-[var(--muted-foreground)] mb-2 gap-2">
+              <span><strong>Vermögensentwicklung</strong> (Kapital + thesaurierte Kursgewinne & Dividenden):</span>
+              <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block"></span> Einzahlung</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Netto-Wachstum (Günstigster Broker)</span>
+              </div>
+            </div>
+            <div id="growthChartBars" class="grid grid-cols-10 gap-2 items-end h-36 pt-6 px-3 pb-2 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlight Callout explaining Vanguard All-World specifics in Switzerland -->
+        <div id="comparisonCallout" class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] text-xs md:text-sm space-y-1.5">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filter + Legend -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 shadow-sm">
+      <div class="flex flex-wrap gap-2">
+        <button onclick="setFilter('all')" id="filter-all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+          Alle Anbieter (10)
+        </button>
+        <button onclick="setFilter('neobanker')" id="filter-neobanker" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] transition">
+          📱 Neobanken (Neon, Yuh)
+        </button>
+        <button onclick="setFilter('statebank')" id="filter-statebank" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] transition">
+          🏛️ Staats- & Grossbanken (ZKB, PostFinance, Raiffeisen, UBS)
+        </button>
+        <button onclick="setFilter('onlinebroker')" id="filter-onlinebroker" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] transition">
+          💻 Online-Broker (Saxo, Swissquote, IBKR, VIAC)
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)]">
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-blue-500 inline-block"></span> Start-Kauf (50k)</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-indigo-500 inline-block"></span> Monats-Käufe</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-amber-500 inline-block"></span> Depotgebühr (auf wachsendes Depot!)</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-rose-500 inline-block"></span> FX + Stempelsteuer</span>
+      </div>
+    </div>
+
+    <!-- Provider Comparison Table & End-Wealth Ranking -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-semibold">3. Anbieter-Vergleich: Broker-Gebühren & Endvermögen mit Vanguard All-World</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            Beachte: Weil das Depot durch das ETF-Wachstum grösser wird, steigen auch prozentuale Depotgebühren (z. B. 0.25% p.a. bei ZKB/Raiffeisen) über die Jahre mit an!
+          </p>
+        </div>
+        <div class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--secondary)] text-[var(--secondary-foreground)]" id="tableTimeframeHint">
+          Zeitraum: 10 Jahre
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-[var(--border)] text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] bg-[var(--background)]">
+              <th class="py-3.5 px-4">Rang & Anbieter</th>
+              <th class="py-3.5 px-3 text-right">Start-Kauf<br/><span class="font-normal text-[var(--muted-foreground)]">(Monat 1)</span></th>
+              <th class="py-3.5 px-3 text-right">Monats-Käufe<br/><span class="font-normal text-[var(--muted-foreground)]">(Total Raten)</span></th>
+              <th class="py-3.5 px-3 text-right">Depotgebühr<br/><span class="font-normal text-[var(--muted-foreground)]">(inkl. Wachstum)</span></th>
+              <th class="py-3.5 px-3 text-right">FX & Stempel<br/><span class="font-normal text-[var(--muted-foreground)]">(0.15% IE-ISIN)</span></th>
+              <th class="py-3.5 px-3 text-right">Broker-Gebühren<br/><span class="font-normal text-[var(--muted-foreground)]">(Summe direkt)</span></th>
+              <th class="py-3.5 px-4 text-right">Endvermögen (Netto)<br/><span class="font-normal text-emerald-500">(inkl. ETF-Wachstum)</span></th>
+              <th class="py-3.5 px-4 w-44">Kosten-Struktur</th>
+            </tr>
+          </thead>
+          <tbody id="providerTableBody" class="divide-y divide-[var(--border)] text-sm">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Selected Provider Step-by-Step Inspector -->
+    <div id="inspectorPanel" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-[var(--muted-foreground)] pb-6">
+      Alle Angaben ohne Gewähr (Stand Tarife 2025/2026). Keine Anlageberatung.
+    </div>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    const PROVIDERS = [
+      {
+        id: 'ibkr',
+        name: 'Interactive Brokers (IBKR)',
+        subtitle: 'Globaler Online-Broker (Kauf VWCE/VWRA direkt ohne Stempelsteuer)',
+        category: 'onlinebroker',
+        badge: '🌎 Globaler Broker',
+        swissBroker: false,
+        custodyRatePA: 0.0,
+        custodyMinPA: 0,
+        custodyMaxPA: 0,
+        fxMarkupRate: 0.0002,
+        terOverride: null,
+        tradeCommissionFn: (amount) => Math.max(3, amount * 0.0005),
+        feeFormulaText: 'Depotgebühr: 0.00% | Courtage: 0.05% (Min. CHF 3) | FX: 0.002% | Eidg. Stempelsteuer: 0.00% (entfällt komplett!)',
+        vanguardNote: 'Bei IBKR kaufst du den Vanguard FTSE All-World Acc (VWCE in EUR, VWRA in USD oder an der SIX in CHF) komplett ohne die 0.15% Schweizer Stempelsteuer.',
+        pros: ['Maximales Endvermögen dank 0% Depotgebühr und 0% Stempelsteuer', 'Fast kostenloser Währungswechsel (0.002%)'],
+        cons: ['Ausländischer Broker (Steuerdeklaration manuell im Wertschriftenverzeichnis mit ICTax)']
+      },
+      {
+        id: 'saxo',
+        name: 'Saxo Bank Schweiz',
+        subtitle: 'FINMA-regulierter Schweizer Broker (AutoInvest Sparplan 0 CHF)',
+        category: 'onlinebroker',
+        badge: '💻 CH-Broker (Preis-Sieger CH)',
+        swissBroker: true,
+        custodyRatePA: 0.0,
+        custodyMinPA: 0,
+        custodyMaxPA: 0,
+        fxMarkupRate: 0.0025,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (isSavingsPlan) return 0;
+          return Math.max(3, Math.min(amount * 0.0008, 125));
+        },
+        feeFormulaText: 'Depotgebühr: 0.00% | Courtage: 0.08% (Min. CHF 3, Max. CHF 125) | ETF-Sparplan (AutoInvest): CHF 0 Kaufgebühr | FX: 0.25%',
+        vanguardNote: 'Der Vanguard FTSE All-World (Acc) kann an der SIX direkt in CHF gekauft werden (spart die 0.25% FX-Gebühr!) und ist im kostenlosen AutoInvest-Sparplan verfügbar.',
+        pros: ['Günstigster Schweizer Broker (inkl. gratis Schweizer e-Steuerauszug)', '0 CHF Depotgebühr – selbst wenn dein ETF auf 200\'000+ CHF anwächst', 'Einmalkauf von 50\'000 CHF kostet nur CHF 40 Courtage'],
+        cons: ['Eidg. Stempelsteuer (0.15% da Irland-ISIN IE00BK5BQT80) fällt wie bei allen CH-Banken an']
+      },
+      {
+        id: 'neon',
+        name: 'neon invest',
+        subtitle: 'Schweizer Smartphone-Konto (Invesco FTSE All-World im 0%-Sparplan / Vanguard 0.5%)',
+        category: 'neobanker',
+        badge: '📱 Neobank',
+        swissBroker: true,
+        custodyRatePA: 0.0,
+        custodyMinPA: 0,
+        custodyMaxPA: 0,
+        fxMarkupRate: 0.0,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (assetMix === 'vwce_chf' || assetMix === 'chf_etf') {
+            return amount * 0.005;
+          }
+          const baseRate = assetMix === 'global_etf' ? 0.0075 : 0.01;
+          return isSavingsPlan ? amount * (baseRate * 0.5) : amount * baseRate;
+        },
+        feeFormulaText: 'Depotgebühr: 0.00% | ETF-Kauf an BX Swiss (in CHF): 0.50% ohne Mindestgebühr (Tipp: Alternative Invesco FTSE All-World Acc im Sparplan 0%!) | FX: 0.00%',
+        vanguardNote: 'Alle Handel an der BX Swiss erfolgen bei neon direkt in CHF (0% FX-Aufschlag). Für den Vanguard All-World fallen 0.5% Kaufgebühr an. (Geheimtipp bei neon: Der fast identische Invesco FTSE All-World Acc hat im neon-Sparplan 0% Kaufgebühr!)',
+        pros: ['0 CHF Depotgebühr auf Lebenszeit – das gesamte ETF-Wachstum bleibt ungeschmälert', 'Kein Währungswechsel-Aufschlag (Handel in CHF an BX Swiss)'],
+        cons: ['0.50% Kaufgebühr ohne Kostendach bedeutet CHF 250 beim 50\'000 CHF Startkauf + CHF 25 pro 5\'000 CHF Rate']
+      },
+      {
+        id: 'swissquote',
+        name: 'Swissquote',
+        subtitle: 'Schweizer Marktführer (Vanguard All-World als CHF 9 Flat-Fee Prime ETF)',
+        category: 'onlinebroker',
+        badge: '💻 CH-Broker',
+        swissBroker: true,
+        custodyRatePA: 0.001,
+        custodyMinPA: 80,
+        custodyMaxPA: 200,
+        fxMarkupRate: 0.0095,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (assetMix === 'vwce_chf' || assetMix === 'chf_etf' || isSavingsPlan) return 9;
+          if (amount <= 5000) return 29;
+          if (amount <= 15000) return 55;
+          if (amount <= 50000) return 95;
+          return 145;
+        },
+        feeFormulaText: 'Depotgebühr: 0.10% p.a. (Min. CHF 80, gedeckelt bei Max. CHF 200/Jahr!) | Vanguard ETF an SIX: CHF 9 pauschal pro Kauf | FX (falls Fremdwährung): 0.95%',
+        vanguardNote: 'Kauft man den Vanguard FTSE All-World an der Schweizer Börse SIX in CHF, fällt bei Swissquote dank "ETF Leader" nur CHF 9 Flat-Fee an (sowohl für den 50\'000 CHF Kauf als auch für die 5\'000 CHF Raten) und man vermeidet die 0.95% FX-Gebühr!',
+        pros: ['Nur CHF 9 Gebühr für den 50\'000 CHF Startkauf (an der SIX in CHF)', 'Depotgebühr ist bei max. CHF 200/Jahr gedeckelt – wächst das Depot auf 200k+, steigt die Gebühr nicht weiter'],
+        cons: ['Laufende Depotgebühr von CHF 100–200 pro Jahr summiert sich über 10 Jahre auf ~1\'300 CHF']
+      },
+      {
+        id: 'yuh',
+        name: 'Yuh (Swissquote / PostFinance)',
+        subtitle: 'Schweizer Finanz-App (Trading & Sparplan)',
+        category: 'neobanker',
+        badge: '📱 Neobank',
+        swissBroker: true,
+        custodyRatePA: 0.0,
+        custodyMinPA: 0,
+        custodyMaxPA: 0,
+        fxMarkupRate: 0.0095,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (isSavingsPlan) return Math.max(1, amount * 0.0025);
+          return Math.max(1, amount * 0.005);
+        },
+        feeFormulaText: 'Depotgebühr: 0.00% | Kaufgebühr: 0.50% (ausgewählte Sparplan-ETFs 0%) | FX-Gebühr: 0.95% falls in USD/EUR gehandelt',
+        vanguardNote: 'Keine Depotgebühren während der gesamten Wachstumsphase. Beim Einmalkauf von 50\'000 CHF schlagen jedoch 0.50% (CHF 250) zu Buche.',
+        pros: ['0 CHF Depotgebühr über 10–20 Jahre', 'Sehr einfache App-Bedienung mit kostenlosem Steuerauszug'],
+        cons: ['Bei Fremdwährungs-ETFs hohe 0.95% Wechselkursgebühr']
+      },
+      {
+        id: 'postfinance',
+        name: 'PostFinance (E-Trading)',
+        subtitle: 'Staatsnahe Bank mit Pauschal-Depotgebühr',
+        category: 'statebank',
+        badge: '🏛️ Staatsnah',
+        swissBroker: true,
+        custodyRatePA: 0.0,
+        custodyMinPA: 72,
+        custodyMaxPA: 72,
+        fxMarkupRate: 0.0095,
+        terOverride: null,
+        tradeCommissionFn: (amount) => {
+          if (amount <= 500) return 9;
+          if (amount <= 1000) return 15;
+          if (amount <= 2000) return 25;
+          if (amount <= 5000) return 35;
+          if (amount <= 10000) return 45;
+          if (amount <= 15000) return 60;
+          if (amount <= 25000) return 80;
+          if (amount <= 50000) return 115;
+          return 165;
+        },
+        feeFormulaText: 'Depotgebühr: CHF 72/Jahr fix | Courtage: CHF 115 (für 50k Start) + CHF 35 (pro 5k Rate) | FX: 0.95%',
+        vanguardNote: 'Vorteil gegenüber Kantonalbanken: Die Depotgebühr bleibt fix bei CHF 72/Jahr, auch wenn dein Vanguard-ETF auf CHF 200\'000 anwächst.',
+        pros: ['Fixe Depotgebühr (CHF 72/Jahr) wächst nicht mit dem Depotwert mit'],
+        cons: ['10 Monatsraten à 5\'000 CHF kosten jeweils CHF 35 Courtage (= CHF 350 nur für die Raten)']
+      },
+      {
+        id: 'viac',
+        name: 'VIAC Invest (Global 100 Index)',
+        subtitle: 'Schweizer Digital-Lösung (Eigene Swisscanto/VIAC Welt-Indexfonds statt Vanguard)',
+        category: 'onlinebroker',
+        badge: '🤖 Robo/Indexfonds',
+        swissBroker: true,
+        custodyRatePA: 0.0025,
+        custodyMinPA: 0,
+        custodyMaxPA: 10000,
+        fxMarkupRate: 0.0,
+        terOverride: 0.0022,
+        tradeCommissionFn: () => 0,
+        feeFormulaText: 'Verwaltungsgebühr: 0.25% p.a. | Kaufgebühren: CHF 0 | Stempelsteuer & FX: CHF 0 (CH-Indexfonds)',
+        vanguardNote: 'Hinweis: Bei VIAC kaufst du nicht direkt den Vanguard-ETF, sondern eine äquivalente "Global 100" Welt-Strategie mit Schweizer Indexfonds (spart US-Quellensteuer & Stempelsteuer, kostet aber 0.25% p.a. laufende Gebühr).',
+        pros: ['0 CHF Kaufgebühren und 0 CHF Stempelsteuer beim Einstieg (ideal für kurze Haltedauer)'],
+        cons: ['0.25% jährliche Verwaltungsgebühr wächst mit dem Depotwert mit und wird ab Jahr 3–5 teurer als ein Gratis-Depot bei Saxo/Neon']
+      },
+      {
+        id: 'zkb',
+        name: 'Zürcher Kantonalbank (ZKB)',
+        subtitle: 'Grösste Staatsbank (mit Staatsgarantie)',
+        category: 'statebank',
+        badge: '🏛️ Staatsbank',
+        swissBroker: true,
+        custodyRatePA: 0.0025,
+        custodyMinPA: 100,
+        custodyMaxPA: 10000,
+        fxMarkupRate: 0.012,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (isSavingsPlan) return Math.max(15, amount * 0.004);
+          return Math.max(40, Math.min(amount * 0.0065, 750));
+        },
+        feeFormulaText: 'Depotgebühr für Dritt-ETFs (Vanguard): ~0.25% p.a. (Min. CHF 100/J.) | Courtage: 0.65% (Min. CHF 40) | FX: ~1.20%',
+        vanguardNote: 'Achtung bei Staatsbanken: Die ZKB hat zwar die Depotgebühr für ZKB-eigene Swisscanto-Fonds abgeschafft (Dafür haben diese höhere Fonds-TERs von ~0.45%–1.2%), für Dritt-ETFs wie Vanguard fällt aber weiterhin die jährliche Depotgebühr auf das wachsende Gesamtvermögen an!',
+        pros: ['Staatsgarantie & persönliche Betreuung'],
+        cons: ['Wenn dein Vanguard-ETF in 10 Jahren von 100k auf ~195k wächst, steigt auch die jährliche Depotgebühr von CHF 250 auf fast CHF 500 pro Jahr!']
+      },
+      {
+        id: 'raiffeisen',
+        name: 'Raiffeisen Schweiz',
+        subtitle: 'Genossenschaftsbank / Regionalbank',
+        category: 'statebank',
+        badge: '🏛️ Traditionsbank',
+        swissBroker: true,
+        custodyRatePA: 0.0025,
+        custodyMinPA: 60,
+        custodyMaxPA: 5000,
+        fxMarkupRate: 0.0125,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (isSavingsPlan) return Math.max(10, amount * 0.005);
+          return Math.max(40, amount * 0.0065);
+        },
+        feeFormulaText: 'Depotgebühr: 0.25% p.a. (Min. CHF 60) | Courtage: 0.65% (Min. CHF 40) | FX: ~1.25%',
+        vanguardNote: 'Sowohl der 50\'000 CHF Startkauf (CHF 325) als auch die 10 Raten (CHF 250) und die mitwachsende Depotgebühr (0.25% p.a.) bremsen den Zinseszins deutlich.',
+        pros: ['Lokale Verankerung & Beratung'],
+        cons: ['Hohe Gesamtkosten über 10 Jahre durch prozentuale Depotgebühr auf das wachsende ETF-Volumen']
+      },
+      {
+        id: 'ubs',
+        name: 'UBS (Digital Banking Depot)',
+        subtitle: 'Schweizer Grossbank',
+        category: 'statebank',
+        badge: '🏛️ Grossbank',
+        swissBroker: true,
+        custodyRatePA: 0.0035,
+        custodyMinPA: 60,
+        custodyMaxPA: 15000,
+        fxMarkupRate: 0.013,
+        terOverride: null,
+        tradeCommissionFn: (amount, assetMix, isSavingsPlan) => {
+          if (isSavingsPlan) return Math.max(15, amount * 0.006);
+          return Math.max(45, amount * 0.008);
+        },
+        feeFormulaText: 'Depotgebühr: 0.35% p.a. (Min. CHF 60) | Courtage: 0.80% (Min. CHF 45) | FX: ~1.30%',
+        vanguardNote: 'Bei 0.35% Depotgebühr p.a. + 0.22% Vanguard TER verlierst du jedes Jahr fast 0.6% deiner Rendite allein für die Aufbewahrung.',
+        pros: ['Umfassendes internationales Grossbanken-Angebot'],
+        cons: ['Über 10 Jahre frisst die 0.35% Depotgebühr inkl. Zinseszins-Verlust über CHF 7\'500 vom ETF-Wachstum weg']
+      }
+    ];
+
+    let activeFilter = 'all';
+    let selectedProviderId = 'saxo';
+
+    function formatCHF(val) {
+      const rounded = Math.round(val);
+      const sign = rounded < 0 ? '-' : '';
+      return sign + "CHF " + Math.abs(rounded).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+    }
+
+    function syncInputs(field, value) {
+      let num = parseFloat(value) || 0;
+      const totalEl = document.getElementById('totalCapitalInput');
+      const initEl = document.getElementById('initialInvestInput');
+      const monthEl = document.getElementById('monthlyInvestInput');
+
+      if (field === 'totalCapital') {
+        document.getElementById('totalCapitalRange').value = Math.min(500000, num);
+        totalEl.value = num;
+        if (parseFloat(initEl.value) > num) {
+          initEl.value = num;
+          document.getElementById('initialInvestRange').value = Math.min(500000, num);
+        }
+      } else if (field === 'initialInvest') {
+        const total = parseFloat(totalEl.value) || 0;
+        if (num > total) num = total;
+        document.getElementById('initialInvestRange').value = Math.min(500000, num);
+        initEl.value = num;
+      } else if (field === 'monthlyInvest') {
+        document.getElementById('monthlyInvestRange').value = Math.min(25000, num);
+        monthEl.value = num;
+      } else if (field === 'returnRate') {
+        document.getElementById('returnRateRange').value = num;
+      }
+      recalculate();
+    }
+
+    function applyPreset(total, initial, monthly, years, assetMix, returnRate) {
+      document.getElementById('totalCapitalInput').value = total;
+      document.getElementById('totalCapitalRange').value = Math.min(500000, total);
+      document.getElementById('initialInvestInput').value = initial;
+      document.getElementById('initialInvestRange').value = Math.min(500000, initial);
+      document.getElementById('monthlyInvestInput').value = monthly;
+      document.getElementById('monthlyInvestRange').value = Math.min(25000, monthly);
+      document.getElementById('holdingYears').value = years.toString();
+      if (assetMix) document.getElementById('assetMix').value = assetMix;
+      if (returnRate !== undefined) document.getElementById('returnRateRange').value = returnRate;
+      recalculate();
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      ['all', 'neobanker', 'statebank', 'onlinebroker'].forEach(f => {
+        const btn = document.getElementById('filter-' + f);
+        if (f === filter) {
+          btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] transition';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)] transition';
+        }
+      });
+      recalculate();
+    }
+
+    function selectProvider(id) {
+      selectedProviderId = id;
+      recalculate();
+    }
+
+    function simulateProviderWithGrowth(provider, params) {
+      const {
+        totalCapital,
+        initialInvest,
+        monthlyInvest,
+        assetMix,
+        holdingYears,
+        annualReturnPct,
+        includeStampDuty,
+        useSavingsPlan,
+        includeTerInGrowth
+      } = params;
+
+      const totalMonths = holdingYears * 12;
+      const terAnnual = includeTerInGrowth ? 0.0022 : 0.0;
+      const netAnnualGrowth = (annualReturnPct / 100) - terAnnual;
+      const monthlyGrowthFactor = Math.pow(1 + netAnnualGrowth, 1 / 12) - 1;
+
+      const fxShare = (assetMix === 'vwce_chf' || assetMix === 'chf_etf') ? 0.0 : (assetMix === 'global_etf' ? 0.5 : 1.0);
+      const stampRate = (includeStampDuty && provider.swissBroker && provider.id !== 'viac')
+        ? (assetMix === 'chf_etf' ? 0.00075 : (assetMix === 'global_etf' ? 0.001125 : 0.0015))
+        : 0.0;
+
+      let remainingCashToInvest = Math.max(0, totalCapital - initialInvest);
+      let portfolioValue = 0;
+      let totalDeposited = 0;
+
+      let initialFee = 0;
+      let monthlyFeesTotal = 0;
+      let trancheCount = 0;
+      let fxFeeTotal = 0;
+      let stampDutyTotal = 0;
+      let custodyTotal = 0;
+      let terTotalImplicit = 0;
+
+      const yearlySnapshots = [];
+      let yearAumSum = 0;
+
+      for (let m = 0; m < totalMonths; m++) {
+        let grossDeposit = 0;
+        if (m === 0 && initialInvest > 0) {
+          grossDeposit = initialInvest;
+          const comm = provider.tradeCommissionFn(grossDeposit, assetMix, false);
+          const fx = grossDeposit * fxShare * provider.fxMarkupRate;
+          const stamp = grossDeposit * stampRate;
+          initialFee += comm;
+          fxFeeTotal += fx;
+          stampDutyTotal += stamp;
+          portfolioValue += Math.max(0, grossDeposit - comm - fx - stamp);
+          totalDeposited += grossDeposit;
+        } else if (m > 0 && remainingCashToInvest > 0.01 && monthlyInvest > 0) {
+          grossDeposit = Math.min(remainingCashToInvest, monthlyInvest);
+          remainingCashToInvest -= grossDeposit;
+          trancheCount++;
+          const comm = provider.tradeCommissionFn(grossDeposit, assetMix, useSavingsPlan);
+          const fx = grossDeposit * fxShare * provider.fxMarkupRate;
+          const stamp = grossDeposit * stampRate;
+          monthlyFeesTotal += comm;
+          fxFeeTotal += fx;
+          stampDutyTotal += stamp;
+          portfolioValue += Math.max(0, grossDeposit - comm - fx - stamp);
+          totalDeposited += grossDeposit;
+        }
+
+        if (includeTerInGrowth) {
+          terTotalImplicit += portfolioValue * (0.0022 / 12);
+        }
+        portfolioValue = portfolioValue * (1 + monthlyGrowthFactor);
+        yearAumSum += portfolioValue;
+
+        if ((m + 1) % 12 === 0) {
+          const avgYearAum = yearAumSum / 12;
+          let yearCustody = 0;
+          if (provider.custodyRatePA === 0 && provider.custodyMinPA > 0) {
+            yearCustody = provider.custodyMinPA;
+          } else if (provider.custodyRatePA > 0) {
+            const rawCustody = avgYearAum * provider.custodyRatePA;
+            yearCustody = Math.min(provider.custodyMaxPA, Math.max(provider.custodyMinPA, rawCustody));
+          }
+          custodyTotal += yearCustody;
+          portfolioValue = Math.max(0, portfolioValue - yearCustody);
+
+          yearlySnapshots.push({
+            year: (m + 1) / 12,
+            deposited: totalDeposited,
+            portfolioValue,
+            yearCustody,
+            avgYearAum
+          });
+          yearAumSum = 0;
+        }
+      }
+
+      const fxAndStamp = fxFeeTotal + stampDutyTotal;
+      const totalCost = initialFee + monthlyFeesTotal + custodyTotal + fxAndStamp;
+      const costPercent = totalDeposited > 0 ? (totalCost / totalDeposited) * 100 : 0;
+      const netProfit = portfolioValue - totalDeposited;
+
+      return {
+        provider,
+        totalDeposited,
+        trancheCount,
+        initialFee,
+        monthlyFeesTotal,
+        singleMonthlyFee: trancheCount > 0 ? (monthlyFeesTotal / trancheCount) : 0,
+        custodyTotal,
+        fxFee: fxFeeTotal,
+        stampDuty: stampDutyTotal,
+        fxAndStamp,
+        terTotalImplicit,
+        totalCost,
+        costPercent,
+        finalWealth: portfolioValue,
+        netProfit,
+        yearlySnapshots
+      };
+    }
+
+    function recalculate() {
+      const totalCapital = Math.max(0, parseFloat(document.getElementById('totalCapitalInput').value) || 0);
+      const initialInvest = Math.max(0, Math.min(totalCapital, parseFloat(document.getElementById('initialInvestInput').value) || 0));
+      const monthlyInvest = Math.max(0, parseFloat(document.getElementById('monthlyInvestInput').value) || 0);
+      const assetMix = document.getElementById('assetMix').value;
+      const holdingYears = parseInt(document.getElementById('holdingYears').value, 10) || 10;
+      const annualReturnPct = parseFloat(document.getElementById('returnRateRange').value) || 0;
+      const includeStampDuty = document.getElementById('includeStampDuty').checked;
+      const useSavingsPlan = document.getElementById('useSavingsPlan').checked;
+      const includeTerInGrowth = document.getElementById('includeTerInGrowth').checked;
+
+      document.getElementById('totalCapitalLabel').textContent = formatCHF(totalCapital);
+      document.getElementById('initialInvestLabel').textContent = formatCHF(initialInvest);
+      document.getElementById('monthlyInvestLabel').textContent = formatCHF(monthlyInvest) + ' / Mt.';
+      document.getElementById('returnRateLabel').textContent = annualReturnPct.toFixed(1) + '% p.a.';
+
+      const params = {
+        totalCapital,
+        initialInvest,
+        monthlyInvest,
+        assetMix,
+        holdingYears,
+        annualReturnPct,
+        includeStampDuty,
+        useSavingsPlan,
+        includeTerInGrowth
+      };
+
+      const allResults = PROVIDERS.map(p => simulateProviderWithGrowth(p, params));
+      allResults.sort((a, b) => b.finalWealth - a.finalWealth);
+
+      const bestRes = allResults[0];
+      const zkbRes = allResults.find(r => r.provider.id === 'zkb');
+      const ubsRes = allResults.find(r => r.provider.id === 'ubs');
+      const saxoRes = allResults.find(r => r.provider.id === 'saxo');
+      const neonRes = allResults.find(r => r.provider.id === 'neon');
+
+      document.getElementById('kpiTotalInvested').textContent = formatCHF(bestRes.totalDeposited);
+      document.getElementById('kpiTranches').textContent =
+        `${initialInvest > 0 ? '1x ' + Math.round(initialInvest / 1000) + 'k' : '0'} + ${bestRes.trancheCount}x ${Math.round(monthlyInvest / 1000)}k`;
+
+      document.getElementById('kpiFinalWealthBest').textContent = formatCHF(bestRes.finalWealth);
+      document.getElementById('kpiNetProfitBest').textContent =
+        `+${formatCHF(bestRes.netProfit)} Gewinn (${bestRes.provider.name.split(' ')[0]})`;
+
+      document.getElementById('kpiFinalWealthBank').textContent = formatCHF(zkbRes.finalWealth);
+      document.getElementById('kpiNetProfitBank').textContent =
+        `+${formatCHF(zkbRes.netProfit)} bei ZKB`;
+
+      const wealthDiffBank = bestRes.finalWealth - ubsRes.finalWealth;
+      document.getElementById('kpiWealthDiff').textContent = '-' + formatCHF(wealthDiffBank);
+      document.getElementById('kpiWealthDiffSub').textContent =
+        `UBS vs. ${bestRes.provider.name.split(' ')[0]} (${holdingYears} J.)`;
+
+      document.getElementById('scenarioBadge').textContent =
+        `${holdingYears} ${holdingYears === 1 ? 'Jahr' : 'Jahre'} bei ${annualReturnPct.toFixed(1)}% p.a. (${initialInvest > 0 ? '1 Startkauf' : '0'} + ${bestRes.trancheCount} Raten)`;
+      document.getElementById('tableTimeframeHint').textContent =
+        `Zeitraum: ${holdingYears} ${holdingYears === 1 ? 'Jahr' : 'Jahre'} | Wachstum: ${annualReturnPct.toFixed(1)}% p.a.`;
+
+      const chartContainer = document.getElementById('growthChartBars');
+      chartContainer.innerHTML = '';
+      const snaps = bestRes.yearlySnapshots;
+      const step = snaps.length > 10 ? Math.ceil(snaps.length / 10) : 1;
+      const displayedSnaps = snaps.filter((_, idx) => (idx + 1) % step === 0 || idx === snaps.length - 1).slice(0, 10);
+      chartContainer.style.gridTemplateColumns = `repeat(${displayedSnaps.length}, minmax(0, 1fr))`;
+
+      const maxWealthChart = Math.max(...displayedSnaps.map(s => s.portfolioValue), totalCapital, 1);
+
+      displayedSnaps.forEach(s => {
+        const totalPct = Math.max(12, Math.round((s.portfolioValue / maxWealthChart) * 100));
+        const depPct = Math.max(6, Math.round((s.deposited / maxWealthChart) * 100));
+        const growthPct = Math.max(0, totalPct - depPct);
+
+        const col = document.createElement('div');
+        col.className = 'flex flex-col items-center justify-end h-full gap-1';
+        col.innerHTML = `
+          <div class="text-xs font-bold text-emerald-500">${Math.round(s.portfolioValue / 1000)}k</div>
+          <div class="w-full flex flex-col justify-end rounded-t-md overflow-hidden" style="height: ${Math.round(totalPct * 0.85)}px" title="Jahr ${s.year}: Endvermögen ${formatCHF(s.portfolioValue)} (Einzahlung: ${formatCHF(s.deposited)})">
+            <div class="w-full bg-emerald-500 transition-all" style="height: ${growthPct}%"></div>
+            <div class="w-full bg-slate-500/50 transition-all" style="height: ${depPct}%"></div>
+          </div>
+          <div class="text-xs text-[var(--muted-foreground)]">J.${s.year}</div>
+        `;
+        chartContainer.appendChild(col);
+      });
+
+      const saxoVsZkbWealthDiff = saxoRes.finalWealth - zkbRes.finalWealth;
+      document.getElementById('comparisonCallout').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="font-semibold text-[var(--foreground)]">
+              💡 Fazit für deinen Vanguard FTSE All-World (Thesaurierend) über ${holdingYears} ${holdingYears === 1 ? 'Jahr' : 'Jahre'} (${annualReturnPct.toFixed(1)}% Wachstum p.a.):
+            </div>
+            <p class="text-[var(--muted-foreground)]">
+              Aus deinen <strong>${formatCHF(bestRes.totalDeposited)}</strong> werden durch den Zinseszins bei <strong>Saxo Bank Schweiz</strong> netto <strong>${formatCHF(saxoRes.finalWealth)}</strong> (Gebühren total nur ${formatCHF(saxoRes.totalCost)}) und bei <strong>neon invest</strong> netto <strong>${formatCHF(neonRes.finalWealth)}</strong> (Gebühren total ${formatCHF(neonRes.totalCost)}).
+              Bei einer <strong>Staatsbank (ZKB)</strong> zahlst du hingegen <strong>${formatCHF(zkbRes.totalCost)}</strong> an Gebühren (weil die 0.25% Depotgebühr mit dem ETF-Wachstum jedes Jahr teurer wird!) und hast am Ende <strong>${formatCHF(saxoVsZkbWealthDiff)} weniger Vermögen</strong> auf dem Konto.
+            </p>
+          </div>
+          <div class="shrink-0 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 font-bold text-xs text-center">
+            Tipp: Vanguard an der SIX in CHF kaufen<br/>
+            <span class="font-normal text-[var(--muted-foreground)]">Spart 100% der FX-Wechselgebühren!</span>
+          </div>
+        </div>
+      `;
+
+      const filteredResults = activeFilter === 'all'
+        ? allResults
+        : allResults.filter(r => r.provider.category === activeFilter);
+
+      const maxCost = Math.max(...filteredResults.map(r => r.totalCost), 1);
+      const tbody = document.getElementById('providerTableBody');
+      tbody.innerHTML = '';
+
+      filteredResults.forEach((res, idx) => {
+        const p = res.provider;
+        const isSelected = p.id === selectedProviderId;
+        const initialPct = (res.initialFee / maxCost) * 100;
+        const monthlyPct = (res.monthlyFeesTotal / maxCost) * 100;
+        const custodyPct = (res.custodyTotal / maxCost) * 100;
+        const fxStampPct = (res.fxAndStamp / maxCost) * 100;
+        const diffToBest = bestRes.finalWealth - res.finalWealth;
+
+        const tr = document.createElement('tr');
+        tr.onclick = () => selectProvider(p.id);
+        tr.className = `cursor-pointer transition hover:bg-[var(--secondary)]/60 ${isSelected ? 'bg-[var(--secondary)]' : ''}`;
+        tr.innerHTML = `
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? 'bg-emerald-500 text-white' : 'bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)]'}">
+                ${idx + 1}
+              </span>
+              <div>
+                <div class="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+                  <span>${p.name}</span>
+                  ${isSelected ? '<span class="text-xs px-2 py-0.5 rounded bg-[var(--primary)] text-[var(--primary-foreground)]">Aktiv</span>' : ''}
+                </div>
+                <div class="text-xs text-[var(--muted-foreground)]">${p.badge} · ${p.subtitle}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-3 text-right font-medium">
+            ${formatCHF(res.initialFee)}
+            <div class="text-xs text-[var(--muted-foreground)]">1x ${formatCHF(initialInvest)}</div>
+          </td>
+          <td class="py-3.5 px-3 text-right font-medium">
+            ${formatCHF(res.monthlyFeesTotal)}
+            <div class="text-xs text-[var(--muted-foreground)]">${res.trancheCount}x (~${formatCHF(res.singleMonthlyFee)})</div>
+          </td>
+          <td class="py-3.5 px-3 text-right font-medium ${res.custodyTotal === 0 ? 'text-emerald-500' : ''}">
+            ${res.custodyTotal === 0 ? 'CHF 0' : formatCHF(res.custodyTotal)}
+            <div class="text-xs text-[var(--muted-foreground)]">über ${holdingYears} J.</div>
+          </td>
+          <td class="py-3.5 px-3 text-right font-medium">
+            ${formatCHF(res.fxAndStamp)}
+            <div class="text-xs text-[var(--muted-foreground)]">FX: ${formatCHF(res.fxFee)} / St.: ${formatCHF(res.stampDuty)}</div>
+          </td>
+          <td class="py-3.5 px-3 text-right">
+            <div class="font-bold text-[var(--foreground)]">${formatCHF(res.totalCost)}</div>
+            <div class="text-xs text-[var(--muted-foreground)]">${res.costPercent.toFixed(2)}% vom Startkapital</div>
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            <div class="font-bold text-base ${idx === 0 ? 'text-emerald-500' : 'text-[var(--foreground)]'}">${formatCHF(res.finalWealth)}</div>
+            <div class="text-xs ${diffToBest < 10 ? 'text-emerald-500' : 'text-rose-500'}">
+              ${diffToBest < 10 ? '🏆 Maximum' : `-${formatCHF(diffToBest)} ggü. Platz 1`}
+            </div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="w-full h-3.5 rounded-full bg-[var(--background)] border border-[var(--border)] overflow-hidden flex">
+              <div class="bg-blue-500 h-full bar-transition" style="width: ${initialPct}%" title="Start-Kauf: ${formatCHF(res.initialFee)}"></div>
+              <div class="bg-indigo-500 h-full bar-transition" style="width: ${monthlyPct}%" title="Monats-Käufe: ${formatCHF(res.monthlyFeesTotal)}"></div>
+              <div class="bg-amber-500 h-full bar-transition" style="width: ${custodyPct}%" title="Depotgebühr: ${formatCHF(res.custodyTotal)}"></div>
+              <div class="bg-rose-500 h-full bar-transition" style="width: ${fxStampPct}%" title="FX & Stempelsteuer: ${formatCHF(res.fxAndStamp)}"></div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const selectedRes = allResults.find(r => r.provider.id === selectedProviderId) || allResults[0];
+      renderInspector(selectedRes, params);
+    }
+
+    function renderInspector(res, params) {
+      const p = res.provider;
+      const panel = document.getElementById('inspectorPanel');
+      const lastSnap = res.yearlySnapshots[res.yearlySnapshots.length - 1] || { yearCustody: 0 };
+
+      panel.innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+          <div>
+            <div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Detail-Analyse für Vanguard FTSE All-World (Acc)</div>
+            <h3 class="text-xl font-bold mt-0.5 flex items-center gap-2">
+              <span>${p.name}</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-[var(--secondary)] text-[var(--secondary-foreground)] font-medium">${p.badge}</span>
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">${p.feeFormulaText}</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 bg-[var(--background)] border border-[var(--border)] px-4 py-3 rounded-xl">
+            <div>
+              <div class="text-xs text-[var(--muted-foreground)]">Broker-Gebühren (${params.holdingYears} J.)</div>
+              <div class="text-xl font-bold text-rose-500">${formatCHF(res.totalCost)}</div>
+            </div>
+            <div class="border-l border-[var(--border)] pl-4">
+              <div class="text-xs text-[var(--muted-foreground)]">Vanguard TER (0.22% p.a.)</div>
+              <div class="text-lg font-semibold text-[var(--muted-foreground)]">${formatCHF(res.terTotalImplicit)}</div>
+            </div>
+            <div class="border-l border-[var(--border)] pl-4">
+              <div class="text-xs text-emerald-500 font-medium">Netto-Endvermögen</div>
+              <div class="text-2xl font-bold text-emerald-500">${formatCHF(res.finalWealth)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-[var(--foreground)]">
+          <strong>🌍 Vanguard All-World Hinweis bei ${p.name}:</strong> ${p.vanguardNote}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-blue-500">1. Start-Transaktion</span>
+              <span class="text-xs text-[var(--muted-foreground)]">Monat 1</span>
+            </div>
+            <div class="text-lg font-bold">${formatCHF(res.initialFee)}</div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Einmalkauf von <strong>${formatCHF(params.initialInvest)}</strong>.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-indigo-500">2. Monatliche Raten</span>
+              <span class="text-xs text-[var(--muted-foreground)]">${res.trancheCount} Tranchen</span>
+            </div>
+            <div class="text-lg font-bold">${formatCHF(res.monthlyFeesTotal)}</div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              ${res.trancheCount}x Käufe à <strong>${formatCHF(params.monthlyInvest)}</strong> (Ø ${formatCHF(res.singleMonthlyFee)} pro Kauf).
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-amber-500">3. Depotgebühren</span>
+              <span class="text-xs text-[var(--muted-foreground)]">über ${params.holdingYears} J.</span>
+            </div>
+            <div class="text-lg font-bold">${formatCHF(res.custodyTotal)}</div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Im ${params.holdingYears}. Jahr allein ca. <strong>${formatCHF(lastSnap.yearCustody)}/Jahr</strong> auf das gewachsene Depot.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-rose-500">4. FX & Stempelsteuer</span>
+              <span class="text-xs text-[var(--muted-foreground)]">Einmalig beim Kauf</span>
+            </div>
+            <div class="text-lg font-bold">${formatCHF(res.fxAndStamp)}</div>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Währungswechsel: <strong>${formatCHF(res.fxFee)}</strong> + Eidg. Stempel (0.15% IE): <strong>${formatCHF(res.stampDuty)}</strong>.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    recalculate();
+  </script>
+</body>
+</html>
